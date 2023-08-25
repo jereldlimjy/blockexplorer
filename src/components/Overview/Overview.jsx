@@ -63,7 +63,7 @@ export default function Overview() {
     // TODO: mobile responsiveness
     <div className="flex justify-around flex-wrap">
       {cardsData.map((data) => (
-        <div className="flex flex-col items-center rounded bg-navy inline-block p-8">
+        <div className="flex flex-col items-center rounded-md bg-navy inline-block p-8">
           <p className="text-grey font-nunito font text-2xl">{data.title}</p>
           <p className="text-green font-nunito font-bold text-3xl mt-4">
             {data.value}
