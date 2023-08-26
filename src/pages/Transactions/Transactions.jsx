@@ -8,6 +8,7 @@ export default function Transactions() {
   const navigate = useNavigate();
   const { alchemy } = useAppContext();
   const [transactions, setTransactions] = useState();
+  const [isLoading, setIsLoading] = useState();
 
   useEffect(() => {
     if (!blockNum || !Number(blockNum)) {
@@ -16,6 +17,7 @@ export default function Transactions() {
     }
 
     const fetchTransactions = async () => {
+      setIsLoading(true);
       try {
         const block = await alchemy.core.getBlockWithTransactions(
           Number(blockNum)
@@ -24,6 +26,8 @@ export default function Transactions() {
       } catch (err) {
         navigate('/');
         return;
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -37,7 +41,9 @@ export default function Transactions() {
         Block #{blockNum}
       </p>
       <hr className="my-8 border-2 rounded" />
-      {transactions && transactions.length ? (
+      {isLoading ? (
+        <h1 className="text-2xl">Loading...</h1>
+      ) : transactions && transactions.length ? (
         <table className="w-full border border-grey">
           <thead>
             <tr className="bg-blue text-white">
@@ -76,24 +82,26 @@ export default function Transactions() {
                 <td className="py-2 px-4" align="center">
                   {transaction.confirmations}
                 </td>
-                <td
-                  className="py-2 px-4"
-                  align="center"
-                >{`${transaction.from.substring(
-                  0,
-                  8
-                )}...${transaction.from.substring(
-                  transaction.from.length - 8
-                )}`}</td>
-                <td
-                  className="py-2 px-4"
-                  align="center"
-                >{`${transaction.to.substring(
-                  0,
-                  8
-                )}...${transaction.to.substring(
-                  transaction.from.length - 8
-                )}`}</td>
+                <td className="py-2 px-4" align="center">
+                  {transaction?.from
+                    ? `${transaction.from.substring(
+                        0,
+                        8
+                      )}...${transaction.from.substring(
+                        transaction.from.length - 8
+                      )}`
+                    : ''}
+                </td>
+                <td className="py-2 px-4" align="center">
+                  {transaction?.to
+                    ? `${transaction.to.substring(
+                        0,
+                        8
+                      )}...${transaction.to.substring(
+                        transaction.from.length - 8
+                      )}`
+                    : ''}
+                </td>
                 <td className="py-2 px-4" align="center">
                   {Utils.formatEther(transaction.value.toString())} ETH
                 </td>
